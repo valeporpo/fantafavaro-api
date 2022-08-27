@@ -1,4 +1,26 @@
 <?php
+ function checkParams($userInput, $requiredParams)
+ {
+    for($i=0; $i<count($requiredParams); $i++)
+    {
+        if(!array_key_exists($requiredParams[$i], $userInput))
+        {
+            echo 'Some required params are missing';
+            return false;
+        }
+    }
+    return true;
+ }
+
+ function checkMethod($allowedMethod)
+ {
+   if($allowedMethod !== $_SERVER['REQUEST_METHOD'])
+   {
+      echo 'Method not allowed';
+      exit;
+   }
+ }
+ 
  function createConnection($dbHost, $dbName, $dbUser, $dbPassword)
  {
     $connInfo = [
@@ -42,23 +64,5 @@
     }
     $columnsComponent .= ")";
     $result = pg_query($conn, "CREATE TABLE " . $table . " " . $columnsComponent);
- }
-
- function buy_player()
- {
-    echo 'ciao';
- }
-
- function insert_player($conn, $internalId, $externalId, $nome, $squadra, $qta, $manager, $payed)
- {
-    $result = pg_query($conn, "INSERT INTO " . PLAYERS_TABLE .
-                              " VALUES($internalId,
-                                       $externalId,
-                                       '$nome',
-                                       '$squadra',
-                                       $qta,
-                                       $manager,
-                                       $payed)"
-                      );
  }
 ?>

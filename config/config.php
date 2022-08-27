@@ -6,4 +6,6 @@
 
  const PLAYERS_TABLE = "players";
  const MANAGERS_TABLE = "managers";
+
+ const ACCESS_KEY = 'p6h72m0zd3j38uqer';
 ?>
