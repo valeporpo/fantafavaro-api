@@ -21,15 +21,25 @@ parse_str($queryString, $queryArray);
 
 if(!isset($queryArray['token']))
 {
-    echo 'Access token is required';
+    echo json_encode([
+        'status' => 'access denied',
+        'error' => 'access token is required'
+    ]);
     exit;
 } else if($queryArray['token'] != ACCESS_KEY)
 {
-    echo 'Access token you provided is not valid';
+    echo json_encode([
+        'status' => 'access denied',
+        'error' => 'access token you provided is not valid'
+    ]);
     exit;
+
 } else if(!function_exists($endPoint))
 {
-    echo 'Unknown method';
+    echo json_encode([
+        'status' => 'something went wrong',
+        'error' => 'unknown method'
+    ]);
     exit;
 } else
 {
