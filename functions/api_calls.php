@@ -130,7 +130,7 @@
       if($result)
       {
          $response['status'] = 'success';
-         $response['data']['ordine estrazione'] = $indexMax+1;
+         $response['data']['ordine_estrazione'] = $indexMax+1;
       } else
       {
          $response = [
