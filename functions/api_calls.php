@@ -199,41 +199,7 @@
          echo json_encode($response);
          exit;
       }
-   } else
-   {
-      // Estrae un record a caso
-      $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
-            " WHERE extracted IS NULL"
-      );
-      if(!$result)
-      {
-         $response = [
-            'status' => 'something went wrong'
-         ];
-         echo json_encode($response);
-         exit;
-      }
-      $ids = [];
-      while ($row = pg_fetch_array($result)) {
-         $ids[] = $row['internal_id'];
-      }
-
-      $randId = rand(0, count($ids)-1);
-
-      $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
-               " WHERE internal_id=$ids[$randId]"
-      );
-      if(!$result)
-      {
-         $response = [
-            'status' => 'something went wrong'
-         ];
-         echo json_encode($response);
-         exit;
-      }
-   }
-
-   $assocResult = pg_fetch_assoc($result);
+      $assocResult = pg_fetch_assoc($result);
       $response = [
          'status' => 'success',
          'data' => [
@@ -245,7 +211,17 @@
             'ordine_estrazione' => intval($assocResult['extracted'])
          ] 
       ];
-   echo json_encode($response);   
+      echo json_encode($response);
+      exit;
+   } else
+   {
+      $response = [
+         'status' => 'success',
+         'data' => 'no records available'
+      ];
+      echo json_encode($response);
+      exit;
+   }
  }
 
  function retrieve_player($conn) {
