@@ -116,8 +116,8 @@
             'nome' => $assocResult['nome'],
             'squadra' => $assocResult['squadra'],
             'ruolo' => $assocResult['ruolo'],
-            'prezzo base' => $assocResult['qta'],
-            'ordine estrazione' => $assocResult['extracted']
+            'prezzo_base' => $assocResult['qta'],
+            'ordine_estrazione' => $assocResult['extracted']
          ] 
       ];
       // Update extracted record with new extraction position
