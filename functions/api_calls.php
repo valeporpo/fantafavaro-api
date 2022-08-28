@@ -168,7 +168,7 @@
    if(!$result)
    {
       $response = [
-            'status' => 'something went wrong'
+         'status' => 'something went wrong'
       ];
       echo json_encode($response);
       exit;
@@ -266,6 +266,33 @@
          'prezzo_base' => intval($lastExtracted['qta']),
             'ordine_estrazione' => intval($lastExtracted['extracted'])
       ];
+      echo json_encode($response);
+      exit;
+   }
+ }
+
+ function retrieve_managers($conn)
+ {
+   $result = pg_query($conn, "SELECT * FROM " . MANAGERS_TABLE .
+     " WHERE extracted IS NOT NULL"
+   );
+   if(!$result)
+   {
+      $response = [
+         'status' => 'something went wrong'
+      ];
+      echo json_encode($response);
+      exit;
+   } else
+   {
+      $id = 0;
+      $response = [
+         'status' => 'success',
+         'data' => []
+      ];
+      while ($row = pg_fetch_array($result)) {
+         $response['data'][$row['internal_id']] = $row['nome'];
+      }
       echo json_encode($response);
       exit;
    }
