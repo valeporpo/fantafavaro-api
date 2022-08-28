@@ -241,8 +241,8 @@
             'nome' => $assocResult['nome'],
             'squadra' => $assocResult['squadra'],
             'ruolo' => $assocResult['ruolo'],
-            'prezzo base' => intval($assocResult['qta']),
-            'ordine estrazione' => intval($assocResult['extracted'])
+            'prezzo_base' => intval($assocResult['qta']),
+            'ordine_estrazione' => intval($assocResult['extracted'])
          ] 
       ];
    echo json_encode($response);   
