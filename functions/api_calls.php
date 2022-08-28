@@ -248,6 +248,53 @@
    echo json_encode($response);   
  }
 
+ function retrieve_player($conn) {
+   $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
+     " WHERE extracted IS NOT NULL"
+   );
+   if(!$result)
+   {
+      $response = [
+         'status' => 'something went wrong'
+      ];
+      echo json_encode($response);
+      exit;
+   } else if(pg_affected_rows($result) == 0)
+   {
+      $response = [
+         'status' => 'success',
+         'is_beginning' => true
+      ];
+      echo json_encode($response);
+      exit;
+   } else
+   {
+      $response = [
+         'status' => 'success',
+         'is_beginning' => false
+      ];
+      $maxIndex = 0;
+      $lastExtracted = [];
+      while ($row = pg_fetch_array($result)) {
+         if($row['extracted'] > $maxIndex)
+         {
+            $maxIndex = $row['extracted'];
+            $lastExtracted = $row;
+         }
+      }
+      $response['data'] = [
+         'id' => intval($lastExtracted['internal_id']),
+         'nome' => $lastExtracted['nome'],
+         'squadra' => $lastExtracted['squadra'],
+         'ruolo' => $lastExtracted['ruolo'],
+         'prezzo_base' => intval($lastExtracted['qta']),
+            'ordine_estrazione' => intval($lastExtracted['extracted'])
+      ];
+      echo json_encode($response);
+      exit;
+   }
+ }
+
  function buy_player($conn, $params)
  {
     if(checkParams($params, [
