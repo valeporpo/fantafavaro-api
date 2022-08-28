@@ -112,11 +112,11 @@
       $response = [
          'status' => null,
          'data' => [
-            'id' => $assocResult['internal_id'],
+            'id' => intval($assocResult['internal_id']),
             'nome' => $assocResult['nome'],
             'squadra' => $assocResult['squadra'],
             'ruolo' => $assocResult['ruolo'],
-            'prezzo_base' => $assocResult['qta'],
+            'prezzo_base' => intval($assocResult['qta']),
             'ordine_estrazione' => $assocResult['extracted']
          ] 
       ];
