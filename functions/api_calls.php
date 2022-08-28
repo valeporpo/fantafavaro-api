@@ -93,7 +93,7 @@
             " WHERE extracted IS NULL"
    );
    $ids = [];
-   while ($row = pg_fetch_array($result)) {
+   while($row = pg_fetch_array($result)) {
       $ids[] = $row['internal_id'];
    }
 
@@ -251,7 +251,7 @@
       ];
       $maxIndex = 0;
       $lastExtracted = [];
-      while ($row = pg_fetch_array($result)) {
+      while($row = pg_fetch_array($result)) {
          if($row['extracted'] > $maxIndex)
          {
             $maxIndex = $row['extracted'];
@@ -273,9 +273,7 @@
 
  function retrieve_managers($conn)
  {
-   $result = pg_query($conn, "SELECT * FROM " . MANAGERS_TABLE .
-     " WHERE extracted IS NOT NULL"
-   );
+   $result = pg_query($conn, "SELECT * FROM " . MANAGERS_TABLE);
    if(!$result)
    {
       $response = [
@@ -290,8 +288,12 @@
          'status' => 'success',
          'data' => []
       ];
-      while ($row = pg_fetch_array($result)) {
-         $response['data'][$row['internal_id']] = $row['nome'];
+      while($row = pg_fetch_array($result)) {
+         $response['data'][$id] = [
+            'internal_id' => intval($row['internal_id']),
+            'nome' => $row['nome']
+         ];
+         $id++;
       }
       echo json_encode($response);
       exit;
