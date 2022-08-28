@@ -237,12 +237,12 @@
       $response = [
          'status' => 'success',
          'data' => [
-            'id' => $assocResult['internal_id'],
+            'id' => intval($assocResult['internal_id']),
             'nome' => $assocResult['nome'],
             'squadra' => $assocResult['squadra'],
             'ruolo' => $assocResult['ruolo'],
-            'prezzo base' => $assocResult['qta'],
-            'ordine estrazione' => $assocResult['extracted']
+            'prezzo base' => intval($assocResult['qta']),
+            'ordine estrazione' => intval($assocResult['extracted'])
          ] 
       ];
    echo json_encode($response);   
