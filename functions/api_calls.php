@@ -275,6 +275,7 @@
  {
    $result = pg_query($conn, "SELECT managers.internal_id AS id,
                                      managers.nome AS nome,
+                                     (SELECT COUNT(payed) FROM players WHERE managers.internal_id=players.manager_id) AS giocatori,
                                      CASE
                                         WHEN (SELECT COUNT(payed) FROM players WHERE managers.internal_id=players.manager_id) > 0
                                         THEN (SELECT SUM(payed) FROM players WHERE managers.internal_id=players.manager_id)
@@ -299,6 +300,7 @@
          $response['data'][$id] = [
             'id' => intval($row['id']),
             'nome' => $row['nome'],
+            'giocatori' => intval($row['giocatori']),
             'spesa' => intval($row['spesa'])
          ];
          $id++;
