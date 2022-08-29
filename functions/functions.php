@@ -5,7 +5,7 @@
     {
         if(!array_key_exists($requiredParams[$i], $userInput))
         {
-            echo 'Some required params are missing';
+            //echo 'Some required params are missing';
             return false;
         }
     }

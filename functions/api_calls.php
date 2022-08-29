@@ -273,7 +273,14 @@
 
  function retrieve_managers($conn)
  {
-   $result = pg_query($conn, "SELECT * FROM " . MANAGERS_TABLE);
+   $result = pg_query($conn, "SELECT managers.internal_id AS id,
+                                     managers.nome AS nome,
+                                     CASE
+                                        WHEN (SELECT COUNT(payed) FROM players WHERE managers.internal_id=players.manager_id) > 0
+                                        THEN (SELECT SUM(payed) FROM players WHERE managers.internal_id=players.manager_id)
+                                        ELSE 0
+                                     END AS spesa
+                              FROM managers");
    if(!$result)
    {
       $response = [
@@ -290,8 +297,9 @@
       ];
       while($row = pg_fetch_array($result)) {
          $response['data'][$id] = [
-            'internal_id' => intval($row['internal_id']),
-            'nome' => $row['nome']
+            'id' => intval($row['id']),
+            'nome' => $row['nome'],
+            'spesa' => $row['spesa']
          ];
          $id++;
       }
@@ -304,13 +312,21 @@
  {
     if(checkParams($params, [
         'internal_id',
-        'manager',
+        'manager_id',
         'payed'
     ]))
     {
       $internalId = $params['internal_id'];
-      $manager = $params['manager'];
+      $manager = $params['manager_id'];
       $payed = $params['payed'];
+    } else 
+    {
+      $response = [
+         'status' => 'something went wrong',
+         'error' => 'some required params are missing'
+      ];
+      echo json_encode($response);
+      exit;
     }
 
     $result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
@@ -338,7 +354,10 @@
     }
 
     $response = [
-      'status' => 'success'
+      'status' => 'success',
+      'data' => [
+          'internal_id' => intval($internalId)
+      ]
     ];
     echo json_encode($response);
      
