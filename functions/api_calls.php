@@ -86,8 +86,8 @@
 
    // Get previous player extraction position
    $result = pg_query($conn, "SELECT MAX(extracted) AS max FROM " . PLAYERS_TABLE);
+   //print_r(pg_fetch_array($result)); 
    $indexMax = pg_fetch_array($result)['max'];
-
    // Get all unextracted records
    $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
             " WHERE extracted IS NULL"
@@ -125,7 +125,8 @@
                " SET extracted=$indexMax+1" .
                " WHERE internal_id=$ids[$randId]"
       );
-
+      
+      
       // Update response object with success status and extracted record position
       if($result)
       {
@@ -264,7 +265,8 @@
          'squadra' => $lastExtracted['squadra'],
          'ruolo' => $lastExtracted['ruolo'],
          'prezzo_base' => intval($lastExtracted['qta']),
-            'ordine_estrazione' => intval($lastExtracted['extracted'])
+         'ordine_estrazione' => intval($lastExtracted['extracted']),
+         'buyed' => isset($lastExtracted['extracted']) ? 'yes' : 'no'
       ];
       echo json_encode($response);
       exit;
