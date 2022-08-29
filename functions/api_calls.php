@@ -81,73 +81,121 @@
 
  }
 
- function extract_player($conn)
+ function extract_player($conn, $params)
  {
 
-   // Get previous player extraction position
-   $result = pg_query($conn, "SELECT MAX(extracted) AS max FROM " . PLAYERS_TABLE);
-   //print_r(pg_fetch_array($result)); 
-   $indexMax = pg_fetch_array($result)['max'];
-   // Get all unextracted records
-   $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
-            " WHERE extracted IS NULL"
-   );
-   $ids = [];
-   while($row = pg_fetch_array($result)) {
-      $ids[] = $row['internal_id'];
+   if(checkParams($params, [
+      'order_position'
+   ]))
+   {
+    $orderPosition = $params['order_position'];
+   } else 
+   {
+     $response = [
+        'status' => 'something went wrong',
+        'error' => 'some required params are missing'
+     ];
+     echo json_encode($response);
+     exit;
    }
 
-   // Extract random number matching the position of an unextracted record
-   $randId = rand(0, count($ids)-1);
+   $result = pg_query($conn, "SELECT MAX(extracted) AS max FROM " . PLAYERS_TABLE);
+   $indexMax = pg_fetch_array($result)['max'];
 
-   // Get the random record
-   $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
-            " WHERE internal_id=$ids[$randId]"
-   );
-
-   if($result)
+   if($orderPosition == $indexMax)
    {
-      // Save record data in response object
-      $assocResult = pg_fetch_assoc($result);
-      $response = [
-         'status' => null,
-         'data' => [
-            'id' => intval($assocResult['internal_id']),
-            'nome' => $assocResult['nome'],
-            'squadra' => $assocResult['squadra'],
-            'ruolo' => $assocResult['ruolo'],
-            'prezzo_base' => intval($assocResult['qta']),
-            'ordine_estrazione' => $assocResult['extracted']
-         ] 
-      ];
-      // Update extracted record with new extraction position
-      $result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
-               " SET extracted=$indexMax+1" .
-               " WHERE internal_id=$ids[$randId]"
+      // Get all unextracted records
+      $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
+                                " WHERE extracted IS NULL"
       );
+      $ids = [];
+      while($row = pg_fetch_array($result)) {
+         $ids[] = $row['internal_id'];
+      }
+      // Extract random number matching the position of an unextracted record
+      $randId = rand(0, count($ids)-1);
+
+      // Get the random record
+      $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
+                             " WHERE internal_id=$ids[$randId]"
+                     );
       
-      
-      // Update response object with success status and extracted record position
       if($result)
       {
-         $response['status'] = 'success';
-         $response['data']['ordine_estrazione'] = $indexMax+1;
+         // Save record data in response object
+         $assocResult = pg_fetch_assoc($result);
+         $response = [
+               'status' => null,
+               'is_last' => true,
+               'data' => [
+                     'id' => intval($assocResult['internal_id']),
+                     'nome' => $assocResult['nome'],
+                     'squadra' => $assocResult['squadra'],
+                     'ruolo' => $assocResult['ruolo'],
+                     'prezzo_base' => intval($assocResult['qta']),
+                     'ordine_estrazione' => intval($assocResult['extracted'])
+               ] 
+         ];
+         // Update extracted record with new extraction position
+         $result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
+                                 " SET extracted=$indexMax+1" .
+                                 " WHERE internal_id=$ids[$randId]"
+         );
+                        
+                        
+         // Update response object with success status and extracted record position
+         if($result)
+         {
+            $response['status'] = 'success';
+            $response['data']['ordine_estrazione'] = $indexMax+1;
+         } else
+         {
+            $response = [
+               'status' => 'something went wrong'
+            ];
+         }
+      } else
+      {
+         $response = [
+             'status' => 'something went wrong'
+         ];
+      }
+                  
+      echo json_encode($response);
+      exit;
+
+   } else
+   {
+      $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
+                             " WHERE extracted=$orderPosition+1"
+                     );
+
+      if($result)
+      {
+         $assocResult = pg_fetch_assoc($result);
+         $response = [
+             'status' => 'success',
+             'is_last' => false,
+             'data' => [
+                  'id' => intval($assocResult['internal_id']),
+                  'nome' => $assocResult['nome'],
+                  'squadra' => $assocResult['squadra'],
+                  'ruolo' => $assocResult['ruolo'],
+                  'prezzo_base' => intval($assocResult['qta']),
+                  'ordine_estrazione' => intval($assocResult['extracted'])
+             ] 
+         ]; 
       } else
       {
          $response = [
             'status' => 'something went wrong'
          ];
       }
-   } else
-   {
-      $response = [
-         'status' => 'something went wrong'
-      ];
+      
+      echo json_encode($response);
+      exit;
+                    
    }
-
-   echo json_encode($response);
-   
-   
  }
 
  function unextract_player($conn, $params)
@@ -158,32 +206,15 @@
    ]))
    {
     $orderPosition = $params['order_position'];
+   } else 
+   {
+     $response = [
+        'status' => 'something went wrong',
+        'error' => 'some required params are missing'
+     ];
+     echo json_encode($response);
+     exit;
    }
-
-   // Salva il record come non estratto
-   /*$result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
-               " SET extracted=NULL" .
-               " WHERE extracted=$orderPosition"
-            );
-
-   if(!$result)
-   {
-      $response = [
-         'status' => 'something went wrong'
-      ];
-      echo json_encode($response);
-      exit;
-   }  
-
-   if(pg_affected_rows($result) < 1)
-   {
-      $response = [
-         'status' => 'success',
-         'error' => 'please, select an existent ordered position'
-      ];
-      echo json_encode($response);
-      exit;
-   }       */
           
    // Se non è il primo record estratto         
    if($orderPosition > 1)
