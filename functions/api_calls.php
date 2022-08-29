@@ -161,7 +161,7 @@
    }
 
    // Salva il record come non estratto
-   $result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
+   /*$result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
                " SET extracted=NULL" .
                " WHERE extracted=$orderPosition"
             );
@@ -183,7 +183,7 @@
       ];
       echo json_encode($response);
       exit;
-   }       
+   }       */
           
    // Se non è il primo record estratto         
    if($orderPosition > 1)
