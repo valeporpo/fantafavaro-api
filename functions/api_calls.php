@@ -299,7 +299,7 @@
          $response['data'][$id] = [
             'id' => intval($row['id']),
             'nome' => $row['nome'],
-            'spesa' => $row['spesa']
+            'spesa' => intval($row['spesa'])
          ];
          $id++;
       }
