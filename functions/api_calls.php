@@ -266,7 +266,7 @@
          'ruolo' => $lastExtracted['ruolo'],
          'prezzo_base' => intval($lastExtracted['qta']),
          'ordine_estrazione' => intval($lastExtracted['extracted']),
-         'buyed' => isset($lastExtracted['payed']) ? 'yes' : 'no'
+         'buyed' => isset($lastExtracted['payed']) ? true : false
       ];
       echo json_encode($response);
       exit;
