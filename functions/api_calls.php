@@ -102,8 +102,10 @@
    $result = pg_query($conn, "SELECT MAX(extracted) AS max FROM " . PLAYERS_TABLE);
    $indexMax = pg_fetch_array($result)['max'];
 
-   if($orderPosition = 0 || $orderPosition == $indexMax)
+    
+   if($orderPosition == 0 || $orderPosition == $indexMax)
    {
+
       // Get all unextracted records
       $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
                                 " WHERE extracted IS NULL"
