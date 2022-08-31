@@ -43,6 +43,7 @@ if(!isset($queryArray['token']))
     exit;
 } else
 {
+
   $dbConn = createConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
   unset($queryArray['token']);
   $endPoint($dbConn, $queryArray);

@@ -30,9 +30,8 @@
         "password" => $dbPassword
     ];
     $connString = assembleInfo($connInfo);
-
     $conn = pg_connect($connString)
-              or die('Could not connect: ' . pg_last_error());
+              or die('Could not connect: ' . print_r(error_get_last()));
 
     return $conn;
  }

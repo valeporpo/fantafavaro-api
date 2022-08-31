@@ -1,8 +1,8 @@
 <?php
- const DB_HOST = 'ec2-54-228-125-183.eu-west-1.compute.amazonaws.com';
- const DB_NAME = 'd6memn437ahh1b';
- const DB_USER = 'uqkswzeelyfzxo';
- const DB_PASSWORD = '13e44cbf86a3cd6b19c584aee01cf90c97493aadf366fc54e1f67eebb6e13a15';
+ const DB_HOST = 'ec2-54-75-184-144.eu-west-1.compute.amazonaws.com';
+ const DB_NAME = 'de94e9oh5cmri2';
+ const DB_USER = 'jtexedrdcxqfiz';
+ const DB_PASSWORD = '57f8d63a58dfe765ecdab9e3b97c2c164fe2cc6b95232979af289a647c2af1af';
 
  const PLAYERS_TABLE = "players";
  const MANAGERS_TABLE = "managers";
