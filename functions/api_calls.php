@@ -518,7 +518,7 @@
       {
          $data = [];
          while($row = pg_fetch_array($result)) {
-            $data[intval($row['internal_id'])] = [
+            $data[] = [
                'id' => intval($row['internal_id']),
                'nome' => $row['nome'],
                'squadra' => $row['squadra'],
