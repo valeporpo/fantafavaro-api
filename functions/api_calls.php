@@ -474,4 +474,66 @@
     fclose($uploadedFile);
  }
 
+ function get_players($conn, $params)
+ {
+    if(checkParams($params, [
+                              'mode'
+                            ]
+                  )
+      )
+      {
+         $mode = $params['mode'];
+         if($mode != "available" && $mode != "buyed")
+         {
+            $response = [
+               'status' => 'something went wrong',
+               'error' => 'invalid param value'
+            ];
+            echo json_encode($response);
+            exit;
+         }
+      } else 
+      {
+         $response = [
+            'status' => 'something went wrong',
+            'error' => 'some required params are missing'
+         ];
+         echo json_encode($response);
+         exit;
+      }
+
+      $condition = $mode == "available" ? "IS NULL" : "IS NOT NULL";
+      $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
+                                 " WHERE payed $condition"
+      );
+
+      if(!$result)
+      {
+         $response = [
+            'status' => 'something went wrong'
+         ];
+         echo json_encode($response);
+         exit;
+      } else
+      {
+         $data = [];
+         while($row = pg_fetch_array($result)) {
+            $data[intval($row['internal_id'])] = [
+               'id' => intval($row['internal_id']),
+               'nome' => $row['nome'],
+               'squadra' => $row['squadra'],
+               'ruolo' => $row['ruolo'],
+               'prezzo_base' => intval($row['qta'])
+            ];
+            if($mode === 'buyed') { $data[intval($row['internal_id'])]['manager'] = intval($row['manager_id']); } 
+         }
+         $response = [
+            'status' => 'success',
+            'data' => $data
+         ];
+         echo json_encode($response);
+         exit;
+      }
+ }
+
 ?>
