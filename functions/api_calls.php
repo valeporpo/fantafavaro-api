@@ -295,7 +295,7 @@
       {
          $response = [
             'status' => 'success',
-            'is_beginning' => true
+            'position' => 'begin'
          ];
          echo json_encode($response);
          exit;
@@ -304,7 +304,7 @@
       // Almeno un giocatore estratto
       $response = [
          'status' => 'success',
-         'is_beginning' => false
+         'position' => 'middle'
       ];
       $response['data'] = [
          'id' => intval($lastExtracted['internal_id']),
@@ -315,6 +315,8 @@
          'ordine_estrazione' => intval($lastExtracted['extracted']),
          'buyed' => isset($lastExtracted['payed']) ? true : false
       ];
+
+      if($maxIndex == pg_num_rows($result)) { $response['position'] = 'last'; }
       echo json_encode($response);
       exit;
    }
