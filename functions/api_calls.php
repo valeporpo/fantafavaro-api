@@ -309,7 +309,7 @@
       // Almeno un giocatore estratto
       $response = [
          'status' => 'success',
-         'position' => 'middle last'
+         'position' => 'middle last extracted'
       ];
       $response['data'] = [
          'id' => intval($lastExtracted['internal_id']),
