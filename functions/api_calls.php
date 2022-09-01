@@ -99,10 +99,13 @@
      exit;
    }
 
-   $result = pg_query($conn, "SELECT MAX(extracted) AS max FROM " . PLAYERS_TABLE);
-   $indexMax = pg_fetch_array($result)['max'];
+   $result = pg_query($conn, "SELECT MAX(extracted) AS max, COUNT(*) AS count
+                              FROM " . PLAYERS_TABLE);
+   $resultArray = pg_fetch_array($result);    
+   $indexMax = $resultArray['max'];
+   $numPlayers = $resultArray['count'];
 
-    
+   // Se viene richiesto un nuovo giocatore 
    if($orderPosition == 0 || $orderPosition == $indexMax)
    {
 
@@ -128,14 +131,15 @@
          $assocResult = pg_fetch_assoc($result);
          $response = [
                'status' => null,
-               'is_last' => true,
+               'position' => intval($assocResult['extracted']) < $numPlayers ? 'middle last extracted' : 'last',
                'data' => [
                      'id' => intval($assocResult['internal_id']),
                      'nome' => $assocResult['nome'],
                      'squadra' => $assocResult['squadra'],
                      'ruolo' => $assocResult['ruolo'],
                      'prezzo_base' => intval($assocResult['qta']),
-                     'ordine_estrazione' => intval($assocResult['extracted'])
+                     'ordine_estrazione' => intval($assocResult['extracted']),
+                     'buyed' => isset($assocResult['payed']) ? true : false
                ] 
          ];
          // Update extracted record with new extraction position
@@ -177,14 +181,15 @@
          $assocResult = pg_fetch_assoc($result);
          $response = [
              'status' => 'success',
-             'is_last' => false,
+             'position' => 'middle not last extracted',
              'data' => [
                   'id' => intval($assocResult['internal_id']),
                   'nome' => $assocResult['nome'],
                   'squadra' => $assocResult['squadra'],
                   'ruolo' => $assocResult['ruolo'],
                   'prezzo_base' => intval($assocResult['qta']),
-                  'ordine_estrazione' => intval($assocResult['extracted'])
+                  'ordine_estrazione' => intval($assocResult['extracted']),
+                  'buyed' => isset($assocResult['payed']) ? true : false
              ] 
          ]; 
       } else
@@ -304,7 +309,7 @@
       // Almeno un giocatore estratto
       $response = [
          'status' => 'success',
-         'position' => 'middle'
+         'position' => 'middle last'
       ];
       $response['data'] = [
          'id' => intval($lastExtracted['internal_id']),
@@ -557,6 +562,21 @@
          echo json_encode($response);
          exit;
       }
+ }
+
+ function refresh_players($conn)
+ {
+   
+   $result = pg_query($conn, "UPDATE players
+                              SET extracted = NULL, manager_id = NULL, payed = NULL
+                              WHERE 1=1");
+   if($result)
+   {
+      echo 'success';
+   } else
+   {
+      echo 'fail';
+   }
  }
 
 ?>
