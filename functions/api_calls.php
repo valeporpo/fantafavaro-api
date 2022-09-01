@@ -517,15 +517,17 @@
       } else
       {
          $data = [];
+         $i = 0;
          while($row = pg_fetch_array($result)) {
-            $data[] = [
+            $data[$i] = [
                'id' => intval($row['internal_id']),
                'nome' => $row['nome'],
                'squadra' => $row['squadra'],
                'ruolo' => $row['ruolo'],
                'prezzo_base' => intval($row['qta'])
             ];
-            if($mode === 'buyed') { $data[intval($row['internal_id'])]['manager'] = intval($row['manager_id']); } 
+            if($mode === 'buyed') { $data[$i]['manager'] = intval($row['manager_id']); } 
+            $i++;
          }
          $response = [
             'status' => 'success',
