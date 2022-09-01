@@ -526,7 +526,11 @@
                'ruolo' => $row['ruolo'],
                'prezzo_base' => intval($row['qta'])
             ];
-            if($mode === 'buyed') { $data[$i]['manager'] = intval($row['manager_id']); } 
+            if($mode === 'buyed')
+            {
+               $data[$i]['manager'] = intval($row['manager_id']);
+               $data[$i]['payed'] = intval($row['payed']);
+            } 
             $i++;
          }
          $response = [
