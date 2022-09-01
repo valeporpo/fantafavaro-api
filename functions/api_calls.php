@@ -259,9 +259,9 @@
  }
 
  function retrieve_player($conn) {
-   $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
-     " WHERE extracted IS NOT NULL"
-   );
+   $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE);
+
+   // Errore del server
    if(!$result)
    {
       $response = [
@@ -269,20 +269,17 @@
       ];
       echo json_encode($response);
       exit;
+     // Nessun giocatore presente 
    } else if(pg_affected_rows($result) == 0)
    {
       $response = [
-         'status' => 'success',
-         'is_beginning' => true
+         'status' => 'something went wrong',
+         'error' => 'game not initialized'
       ];
       echo json_encode($response);
       exit;
    } else
-   {
-      $response = [
-         'status' => 'success',
-         'is_beginning' => false
-      ];
+   {      
       $maxIndex = 0;
       $lastExtracted = [];
       while($row = pg_fetch_array($result)) {
@@ -292,6 +289,23 @@
             $lastExtracted = $row;
          }
       }
+
+      // Nessun giocatore estratto
+      if(empty($lastExtracted))
+      {
+         $response = [
+            'status' => 'success',
+            'is_beginning' => true
+         ];
+         echo json_encode($response);
+         exit;
+      }
+
+      // Almeno un giocatore estratto
+      $response = [
+         'status' => 'success',
+         'is_beginning' => false
+      ];
       $response['data'] = [
          'id' => intval($lastExtracted['internal_id']),
          'nome' => $lastExtracted['nome'],
