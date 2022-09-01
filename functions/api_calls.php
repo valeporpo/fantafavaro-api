@@ -334,7 +334,8 @@
    if(!$result)
    {
       $response = [
-         'status' => 'something went wrong'
+         'status' => 'something went wrong',
+         'error' => 'server error'
       ];
       echo json_encode($response);
       exit;
