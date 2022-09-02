@@ -140,7 +140,7 @@
          // Save record data in response object
          $assocResult = pg_fetch_assoc($result);
          if(intval($assocResult['extracted']) < $numPlayers) {
-            $position = 'middle las extracted';
+            $position = 'middle last extracted';
          } else {
             $position = 'last';
          }
