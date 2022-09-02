@@ -438,6 +438,32 @@
       exit;
     }
 
+    $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
+                              " WHERE internal_id=$internalId"
+    );
+
+    if(!$result)
+    {
+      $response = [
+         'status' => 'something went wrong',
+         'error' => 'server error'
+      ];
+      echo json_encode($response);
+      exit;
+    }
+
+    if(pg_num_rows($result) != 1)
+    {
+      $response = [
+         'status' => 'something went wrong',
+         'error' => 'please, seleact an existent record'
+      ];
+      echo json_encode($response);
+      exit;
+    }
+
+    $extracted = pg_fetch_array($result)['extracted'];
+
     $result = pg_query($conn, "UPDATE " . PLAYERS_TABLE .
                               " SET manager_id=$manager, payed=$payed
                                 WHERE internal_id=$internalId"
@@ -446,17 +472,8 @@
     if(!$result)
     {
       $response = [
-           'status' => 'something went wrong'
-      ];
-      echo json_encode($response);
-      exit;
-    }  
-         
-    if(pg_affected_rows($result) < 1)
-    {
-      $response = [
-            'status' => 'success',
-            'error' => 'please, select an existent record'
+           'status' => 'something went wrong',
+           'error' => 'server error'
       ];
       echo json_encode($response);
       exit;
@@ -466,7 +483,7 @@
       'status' => 'success',
       'data' => [
           'internal_id' => intval($internalId),
-          'extracted'=> intval(pg_fetch_array($result)['extracted'])
+          'extracted'=> $extracted
       ]
     ];
     echo json_encode($response);
