@@ -591,7 +591,7 @@
       )
       {
          $mode = $params['mode'];
-         if($mode != "available" && $mode != "buyed")
+         if($mode != "available" && $mode != "buyed" && $mode != "all")
          {
             $response = [
                'status' => 'something went wrong',
@@ -610,9 +610,10 @@
          exit;
       }
 
-      $condition = $mode == "available" ? "IS NULL" : "IS NOT NULL";
+      $condition = $mode == "available" ? "payed IS NULL" :
+                   ($mode == "buyed" ? "payed IS NOT NULL" : "1=1");
       $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
-                                 " WHERE payed $condition"
+                                 " WHERE $condition"
       );
 
       if(!$result)
