@@ -633,7 +633,9 @@
                'nome' => $row['nome'],
                'squadra' => $row['squadra'],
                'ruolo' => $row['ruolo'],
-               'prezzo_base' => intval($row['qta'])
+               'prezzo_base' => intval($row['qta']),
+               'ordine_estrazione' => intval($row['extracted']),
+               'buyed' => isset($row['payed']) ? true : false
             ];
             if($mode === 'buyed')
             {
