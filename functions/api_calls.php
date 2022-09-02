@@ -101,20 +101,29 @@
 
    $result = pg_query($conn, "SELECT MAX(extracted) AS max, COUNT(*) AS count
                               FROM " . PLAYERS_TABLE);
-   $resultArray = pg_fetch_array($result);    
+
+   if(!$result)
+   {
+      $response = [
+         'status' => 'something went wrong'
+      ];
+      echo json_encode($response);
+      exit;
+   }                           
+   $resultArray = pg_fetch_array($result); 
    $indexMax = $resultArray['max'];
    $numPlayers = $resultArray['count'];
-
    // Se viene richiesto un nuovo giocatore 
-   if($orderPosition == 0 || $orderPosition == $indexMax)
+   if($orderPosition == 0 && empty($indexMax) || $orderPosition == $indexMax)
    {
-
+      
       // Get all unextracted records
       $result = pg_query($conn, "SELECT internal_id FROM " . PLAYERS_TABLE .
                                 " WHERE extracted IS NULL"
       );
       $ids = [];
-      while($row = pg_fetch_array($result)) {
+      while($row = pg_fetch_array($result))
+      {
          $ids[] = $row['internal_id'];
       }
       // Extract random number matching the position of an unextracted record
@@ -181,7 +190,7 @@
          $assocResult = pg_fetch_assoc($result);
          $response = [
              'status' => 'success',
-             'position' => 'middle not last extracted',
+             'position' => $indexMax == intval($assocResult['extracted']) ? 'middle last extracted' : 'middle not last extracted',
              'data' => [
                   'id' => intval($assocResult['internal_id']),
                   'nome' => $assocResult['nome'],
@@ -207,6 +216,12 @@
 
  function unextract_player($conn, $params)
  {
+
+   /*
+    Chiamata dal 1°giocatore estratto: begin
+    In tutti gli altri casi: middle not last extracted
+
+   */
    // Verifica che sia presente il parametro identificativo del record
    if(checkParams($params, [
       'order_position'
@@ -222,6 +237,33 @@
      echo json_encode($response);
      exit;
    }
+
+   $result = pg_query($conn, "SELECT MAX(extracted) AS max, COUNT(*) AS count
+                              FROM " . PLAYERS_TABLE .
+                              " WHERE extracted IS NOT NULL");
+   
+   if(!$result)
+   {
+      $response = [
+         'status' => 'something went wrong'
+      ];
+      echo json_encode($response);
+      exit;
+   }
+
+   $resultArray = pg_fetch_array($result);    
+   $indexMax = $resultArray['max'];
+   // Se l'indice è superiore al numero di giocatori estratti
+   if($orderPosition > $indexMax)
+   {
+      $response = [
+         'status' => 'something went wrong',
+         'error' => 'invalid index provided'
+      ];
+      echo json_encode($response);
+      exit;
+   } 
+   
           
    // Se non è il primo record estratto         
    if($orderPosition > 1)
@@ -230,6 +272,7 @@
       $result = pg_query($conn, "SELECT * FROM " . PLAYERS_TABLE .
             " WHERE extracted=$orderPosition-1"
       );
+      
       if(!$result)
       {
          $response = [
@@ -241,13 +284,15 @@
       $assocResult = pg_fetch_assoc($result);
       $response = [
          'status' => 'success',
+         'position' => 'middle not last extracted',
          'data' => [
             'id' => intval($assocResult['internal_id']),
             'nome' => $assocResult['nome'],
             'squadra' => $assocResult['squadra'],
             'ruolo' => $assocResult['ruolo'],
             'prezzo_base' => intval($assocResult['qta']),
-            'ordine_estrazione' => intval($assocResult['extracted'])
+            'ordine_estrazione' => intval($assocResult['extracted']),
+            'buyed' => isset($assocResult['payed']) ? true : false
          ] 
       ];
       echo json_encode($response);
@@ -256,7 +301,7 @@
    {
       $response = [
          'status' => 'success',
-         'data' => 'no records available'
+         'position' => 'begin'
       ];
       echo json_encode($response);
       exit;
@@ -274,7 +319,7 @@
       ];
       echo json_encode($response);
       exit;
-     // Nessun giocatore presente 
+   // Nessun giocatore presente 
    } else if(pg_affected_rows($result) == 0)
    {
       $response = [
