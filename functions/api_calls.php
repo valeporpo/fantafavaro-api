@@ -139,9 +139,14 @@
       {
          // Save record data in response object
          $assocResult = pg_fetch_assoc($result);
+         if(intval($assocResult['extracted']) < $numPlayers) {
+            $position = 'middle las extracted';
+         } else {
+            $position = 'last';
+         }
          $response = [
                'status' => null,
-               'position' => intval($assocResult['extracted']) < $numPlayers ? 'middle last extracted' : 'last',
+               'position' => $position,
                'data' => [
                      'id' => intval($assocResult['internal_id']),
                      'nome' => $assocResult['nome'],
@@ -175,7 +180,7 @@
       {
          $response = [
              'status' => 'something went wrong',
-             'error' => 'error'
+             'error' => 'server error'
          ];
       }
                   
@@ -191,6 +196,19 @@
       if($result)
       {
          $assocResult = pg_fetch_assoc($result);
+         if(intval($assocResult['extracted']) < $numPlayers)
+         {
+            if($indexMax == intval($assocResult['extracted']))
+            {
+               $position = 'middle last extracted';
+            } else
+            {
+               $position = 'middle not last extracted';
+            }
+         } else
+         {
+            $position = 'last';
+         }
          $response = [
              'status' => 'success',
              'position' => $indexMax == intval($assocResult['extracted']) ? 'middle last extracted' : 'middle not last extracted',
