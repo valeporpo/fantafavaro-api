@@ -483,7 +483,7 @@
       'status' => 'success',
       'data' => [
           'internal_id' => intval($internalId),
-          'extracted'=> $extracted
+          'extracted'=> intval($extracted)
       ]
     ];
     echo json_encode($response);
