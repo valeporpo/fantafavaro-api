@@ -211,7 +211,7 @@
          }
          $response = [
              'status' => 'success',
-             'position' => $indexMax == intval($assocResult['extracted']) ? 'middle last extracted' : 'middle not last extracted',
+             'position' => $position,
              'data' => [
                   'id' => intval($assocResult['internal_id']),
                   'nome' => $assocResult['nome'],
