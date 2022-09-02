@@ -105,7 +105,8 @@
    if(!$result)
    {
       $response = [
-         'status' => 'something went wrong'
+         'status' => 'something went wrong',
+         'error' => 'server error'
       ];
       echo json_encode($response);
       exit;
@@ -166,13 +167,15 @@
          } else
          {
             $response = [
-               'status' => 'something went wrong'
+               'status' => 'something went wrong',
+               'error' => 'server error'
             ];
          }
       } else
       {
          $response = [
-             'status' => 'something went wrong'
+             'status' => 'something went wrong',
+             'error' => 'error'
          ];
       }
                   
@@ -458,11 +461,12 @@
       echo json_encode($response);
       exit;
     }
-
+    
     $response = [
       'status' => 'success',
       'data' => [
-          'internal_id' => intval($internalId)
+          'internal_id' => intval($internalId),
+          'extracted'=> intval(pg_fetch_array($result)['extracted'])
       ]
     ];
     echo json_encode($response);
