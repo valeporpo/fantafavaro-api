@@ -637,7 +637,7 @@
                'ordine_estrazione' => intval($row['extracted']),
                'buyed' => isset($row['payed']) ? true : false
             ];
-            if(isset($row['buyed']))
+            if(isset($row['payed']))
             {
                $data[$i]['manager'] = intval($row['manager_id']);
                $data[$i]['payed'] = intval($row['payed']);
